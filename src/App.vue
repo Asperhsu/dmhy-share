@@ -1,19 +1,31 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+      <table>
+          <tr v-for="(user, index) in users" :key="index">
+              <td>{{ user.first }} {{ user.last }}</td>
+              <td>{{ user.born }}</td>
+              <td><span style="margin:.3rem;" v-for="tag in user.tags" :key="tag" v-text="tag"></span></td>
+          </tr>
+      </table>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+    import {db} from '@/db.js';
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+    export default {
+        name: 'app',
+
+        data () {
+            return {
+                users: [],
+            };
+        },
+
+        firestore: {
+            users: db.collection('users').where("tags", "array-contains", "xyz"),
+        },
+    }
 </script>
 
 <style>
