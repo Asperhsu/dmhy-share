@@ -1,8 +1,7 @@
 <template>
-    <div class="content">
+    <div class="program">
         <dmhy-frame
             v-if="contentSrc" :src="contentSrc"
-            style="height: 100vh;"
         ></dmhy-frame>
     </div>
 </template>
@@ -23,3 +22,11 @@
         },
     }
 </script>
+
+<style scoped>
+    .program {
+        background-color: #1d1d1d;
+        color: #bcbcbc;
+        height: 100vh;
+    }
+</style>

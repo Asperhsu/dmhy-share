@@ -62,8 +62,6 @@
 <style>
     html, body {
         overflow: hidden !important;
-        background-color: #1d1d1d;
-        color: #bcbcbc;
     }
 
     .table .fit {

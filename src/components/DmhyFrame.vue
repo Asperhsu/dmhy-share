@@ -1,5 +1,5 @@
 <template>
-    <div class="content-frame">
+    <div class="dmhy-frame">
         <iframe :src="src" frameborder="0"></iframe>
     </div>
 </template>
@@ -16,11 +16,12 @@
 </script>
 
 <style scoped>
-    .content-frame {
+    .dmhy-frame {
         background: url('../assets/loading.gif') center center no-repeat;
+        height: 100%;
     }
 
-    .content-frame iframe {
+    .dmhy-frame iframe {
         width: 100%;
         height: 100%;
     }
