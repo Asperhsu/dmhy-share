@@ -21,4 +21,11 @@
     }
 </script>
 
+<style scoped>
+    .admin {
+        overflow: auto;
+        height: 100vh;
+    }
+</style>
+
 

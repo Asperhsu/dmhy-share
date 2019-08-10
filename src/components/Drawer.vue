@@ -37,7 +37,7 @@
                         <div class="list-group-item pl-4 collapse" :class="{show: activeWeekNo == weekNo}"
                             :key="'body' + weekNo" v-if="programsByWeek[weekNo].length"
                             style="background-color: #464646;">
-                            <a href="#" class="text-truncate d-block p-1"
+                            <a href="#" class="text-truncate d-block p-1" :title="program.name"
                                 v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index"
                                 @click.prevent="changeProgram(program)" >
                                 {{ program.name }}
