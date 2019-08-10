@@ -1,8 +1,5 @@
 {
     settings: {
-        current: {
-           season: '2019-summer',
-        },
         admins: {
             emails: ['xxx', ],
         }
@@ -11,20 +8,22 @@
 
     sources: {
         {
-            season: '2019-summer',
+            season_slug: '2019-summer',
+            season_name: '2019 夏番',
             title: 'xxx',
             url: 'xxx',
+            current: true,
         }, ...
     },
-    // db.collection('sources').where("season", "==", '2019-summer'),
+    // db.collection('sources').where("season_slug", "==", '2019-summer'),
 
     programs: {
         {
             week_no: 0~6,
             name: 'xxx',
             keyword: 'xxx',
-            seasons: ['2019-summer', ...],
+            season_slugs: ['2019-summer', ...],
         },...
     },
-    // db.collection('programs').where("seasons", "array-contains", '2019-spring'),
+    // db.collection('programs').where("season_slugs", "array-contains", '2019-spring'),
 }

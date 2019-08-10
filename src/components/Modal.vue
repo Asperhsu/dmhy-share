@@ -2,10 +2,10 @@
     <div class="modal fade" :class="{show: show}" :style="{display: show ? 'block' : 'none'}" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" :class="size ? 'modal-' + size : null" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-dark text-white">
                     <slot name="header"></slot>
 
-                    <button type="button" class="close" @click="show = false">
+                    <button type="button" class="close text-white" @click="show = false">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -15,12 +15,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <slot name="footer">
-                        <div>
-                            <button type="button" class="btn btn-primary mr-1" @click="ok">Save</button>
-                            <button type="button" class="btn btn-secondary" @click="show = false">Close</button>
-                        </div>
-                    </slot>
+                    <slot name="footer"></slot>
                 </div>
             </div>
         </div>
@@ -49,7 +44,6 @@
         methods: {
             ok () {
                 this.$emit('ok');
-                this.show = false;
             }
         },
     }

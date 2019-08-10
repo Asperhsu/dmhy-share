@@ -5,33 +5,54 @@
             <i class="fas fa-angle-double-right fa-2x" v-else></i>
         </div>
 
-        <div class="container d-flex flex-column h-100">
-            <div class="header mb-3">
-                <h1>Drawer</h1>
+        <div class="drawer-container d-flex flex-column h-100">
+            <div class="header d-flex align-items-center m-3">
+                <h3 class="mb-0" v-if="!changeSeason" v-text="activeSource.season_name || 'Loading'"></h3>
+
+                <div v-else class="d-inline-block mr-2">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text bg-dark text-light">季度</label>
+                        </div>
+                        <select class="custom-select" v-model="activeSession">
+                            <option v-for="(name, slug) in seasons" :key="slug" :value="slug" v-text="name"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="ml-auto btn btn-sm btn-info" @click="changeSeason = !changeSeason">
+                    <i class="fa fa-sync-alt"></i>
+                </button>
             </div>
 
             <div class="content flex-grow-1">
                 <ul class="list-group list-group-flush">
                     <template v-for="(weekName, weekNo) in weekNames">
                         <li class="list-group-item d-flex justify-content-between align-items-center"
-                            style="cursor: pointer;"
+                            :class="{'bg-primary': activeWeekNo == weekNo}" style="cursor: pointer;"
                             :key="'head' + weekNo" @click="changeWeekNo(weekNo)">
                             {{ weekName }}
                             <span class="badge badge-secondary badge-pill" v-text="programsByWeek[weekNo].length"></span>
                         </li>
-                        <div class="list-group-item collapse" :class="{show: activeWeekNo == weekNo}"
-                            :key="'body' + weekNo" v-if="programsByWeek[weekNo].length">
+                        <div class="list-group-item pl-4 collapse" :class="{show: activeWeekNo == weekNo}"
+                            :key="'body' + weekNo" v-if="programsByWeek[weekNo].length"
+                            style="background-color: #464646;">
                             <a href="#" class="text-truncate d-block p-1"
                                 v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index"
                                 @click.prevent="changeProgram(program)" >
-                                <i class="fa fa-caret-right mr-1"></i> {{ program.name }}
+                                {{ program.name }}
                             </a>
                         </div>
                     </template>
                 </ul>
+
+                <div class="mx-3 mt-3">
+                    <div><span class="badge badge-info">資料來源</span></div>
+                    <div><small><a :href="activeSource.url" target="_blank" v-text="activeSource.title"></a></small></div>
+                </div>
             </div>
 
-            <div class="footer mt-3 py-2 border-top">
+            <div class="footer mt-3 mx-3 py-2 border-top">
                 <auth-bar></auth-bar>
             </div>
         </div>
@@ -40,6 +61,7 @@
 
 <script>
     import {db} from '@/db.js';
+    import weeknames from '@/weeknames.js';
     import AuthBar from '@/components/AuthBar';
 
     export default {
@@ -49,18 +71,18 @@
 
         data () {
             return {
-                current: {},
+                changeSeason: false,
+                activeSession: null,
+
+                sources: {},
                 programs: [],
 
-                weekNames: ['週日 (日曜日)', '週一 (月曜日)', '週二 (火曜日)', '週三 (水曜日)', '週四 (木曜日)', '週五 (金曜日)', '週六 (土曜日)'],
+                weekNames: weeknames,
                 activeWeekNo: (new Date).getDay(),
             };
         },
 
         computed: {
-            currentSeason () {
-                return this.current.season;
-            },
             programsByWeek () {
                 let programs = {};
                 this.weekNames.map((name, no) => {
@@ -72,17 +94,32 @@
                 });
                 return programs;
             },
+            activeSource () {
+                let sources = this.sources.filter(source => source.active);
+                return sources.length ? sources[0] : {};
+            },
+            seasons () {
+                let seasons = {};
+                this.sources.map(source => {
+                    seasons[source.season_slug] = source.season_name;
+                });
+                return seasons;
+            },
         },
 
         watch: {
-            currentSeason (value) {
-                let programsRef = db.collection('programs').where("seasons", "array-contains", value);
-                this.$bind('programs', programsRef)
+            sources () {
+                if (!this.activeSource.season_slug) return;
+                this.activeSession = this.activeSource.season_slug;
+            },
+            activeSession (value) {
+                let programsRef = db.collection('programs').where("season_slugs", "array-contains", value);
+                this.$bind('programs', programsRef);
             },
         },
 
         firestore: {
-            current: db.collection('settings').doc('current'),
+            sources: db.collection('sources'),
         },
 
         methods: {
@@ -113,7 +150,7 @@
         color: #ddd;
     }
 
-    .container {
+    .drawer-container {
         overflow-y: auto;
         overflow-x: hidden;
     }

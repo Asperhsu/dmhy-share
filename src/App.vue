@@ -30,8 +30,14 @@
             };
         },
 
+        created () {
+            if (location.protocol == 'https:') {
+                location.href = location.href.replace('https:', 'http:');
+            }
+        },
+
         mounted () {
-            // this.toggleDrawer();
+            this.toggleDrawer();
         },
 
         created () {
@@ -52,3 +58,10 @@
         },
     }
 </script>
+
+<style>
+    .table .fit {
+        width:1%;
+        white-space:nowrap;
+    }
+</style>
