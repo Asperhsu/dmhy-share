@@ -1,40 +1,54 @@
 <template>
-  <div id="app">
-      <table>
-          <tr v-for="(user, index) in users" :key="index">
-              <td>{{ user.first }} {{ user.last }}</td>
-              <td>{{ user.born }}</td>
-              <td><span style="margin:.3rem;" v-for="tag in user.tags" :key="tag" v-text="tag"></span></td>
-          </tr>
-      </table>
-  </div>
+    <vue-drawer-layout
+        ref="drawer"
+        :drawer-width="300"
+        @slide-end="handleSlideEnd"
+        @mask-click="toggleDrawer">
+        <div class="drawer-content" slot="drawer">
+            <Drawer :visible="drawerVisible"></Drawer>
+        </div>
+        <div slot="content">
+            <router-view></router-view>
+        </div>
+    </vue-drawer-layout>
 </template>
 
 <script>
-    import {db} from '@/db.js';
+    import {DrawerLayout} from 'vue-drawer-layout';
+    import Drawer from '@/components/Drawer';
 
     export default {
         name: 'app',
+        components: {
+            [DrawerLayout.name]: DrawerLayout,
+            Drawer,
+        },
 
         data () {
             return {
-                users: [],
+                drawerVisible: false,
             };
         },
 
-        firestore: {
-            users: db.collection('users').where("tags", "array-contains", "xyz"),
+        mounted () {
+            // this.toggleDrawer();
+        },
+
+        created () {
+            this.$eventHub.$on('toggle-drawer', this.toggleDrawer);
+        },
+
+        beforeDestroy () {
+            this.$eventHub.$off('toggle-drawer');
+        },
+
+        methods: {
+            toggleDrawer() {
+                this.$refs.drawer.toggle();
+            },
+            handleSlideEnd (visible) {
+                this.drawerVisible = visible;
+            },
         },
     }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

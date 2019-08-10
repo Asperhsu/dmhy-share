@@ -1,11 +1,16 @@
-import Vue from 'vue'
-import { firestorePlugin } from 'vuefire'
-import App from './App.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import { firestorePlugin } from 'vuefire';
+import router from './router.js';
+import App from './App.vue';
 
 Vue.config.productionTip = false
-
+Vue.use(VueRouter);
 Vue.use(firestorePlugin);
 
+Vue.prototype.$eventHub = new Vue();
+
 new Vue({
-  render: h => h(App),
+    router,
+    render: h => h(App),
 }).$mount('#app')

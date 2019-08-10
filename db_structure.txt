@@ -1,0 +1,30 @@
+{
+    settings: {
+        current: {
+           season: '2019-summer',
+        },
+        admins: {
+            emails: ['xxx', ],
+        }
+    }
+    // db.collection('settings').doc('current').get().data().season,
+
+    sources: {
+        {
+            season: '2019-summer',
+            title: 'xxx',
+            url: 'xxx',
+        }, ...
+    },
+    // db.collection('sources').where("season", "==", '2019-summer'),
+
+    programs: {
+        {
+            week_no: 0~6,
+            name: 'xxx',
+            keyword: 'xxx',
+            seasons: ['2019-summer', ...],
+        },...
+    },
+    // db.collection('programs').where("seasons", "array-contains", '2019-spring'),
+}
