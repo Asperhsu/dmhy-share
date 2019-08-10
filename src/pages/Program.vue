@@ -20,6 +20,12 @@
                 return dmhyUrl + this.keyword;
             },
         },
+
+        mounted () {
+            if (location.protocol == 'https:') {
+                location.href = location.href.replace('https:', 'http:');
+            }
+        },
     }
 </script>
 

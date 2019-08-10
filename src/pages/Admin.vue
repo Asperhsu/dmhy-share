@@ -12,6 +12,12 @@
 
     export default {
         components: { SourcePanel, ProgramPanel },
+
+        mounted () {
+            if (location.protocol == 'http:') {
+                location.href = location.href.replace('http:', 'https:');
+            }
+        },
     }
 </script>
 
