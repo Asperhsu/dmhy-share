@@ -157,7 +157,7 @@
 
     .open-btn {
         position: absolute;
-        top: 20px;
+        top: 285px;
         right: -90px;
         width: 90px;
         padding: 10px;
