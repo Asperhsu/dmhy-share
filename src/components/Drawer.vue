@@ -46,13 +46,19 @@
                     </template>
                 </ul>
 
+
+                <div class="form-check my-2 mx-3">
+                    <input class="form-check-input" type="checkbox" v-model="autoClose" :value="true">
+                    <label class="form-check-label" for="defaultCheck1">自動關閉</label>
+                </div>
+
                 <div class="mx-3 mt-3">
                     <div><span class="badge badge-info">資料來源</span></div>
                     <div><small><a :href="activeSource.url" target="_blank" v-text="activeSource.title"></a></small></div>
                 </div>
             </div>
 
-            <div class="footer mt-3 mx-3 py-2 border-top">
+            <div class="footer mt-3 mx-3 py-2">
                 <auth-bar></auth-bar>
             </div>
         </div>
@@ -105,6 +111,10 @@
                 });
                 return seasons;
             },
+            autoClose: {
+                get () { return this.$localStorage.get('drawer-auto-close', true); },
+                set (value) { this.$localStorage.set('drawer-auto-close', !!value); },
+            },
         },
 
         watch: {
@@ -129,6 +139,7 @@
             changeProgram (program) {
                 if (this.$route.name !== 'program' || this.$route.query.keyword !== program.keyword) {
                     this.$router.replace({name: 'program', query: {keyword: program.keyword }});
+                    this.autoClose && this.$eventHub.$emit('toggle-drawer', false);
                 }
             },
         },

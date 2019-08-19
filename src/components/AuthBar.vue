@@ -1,5 +1,5 @@
 <template>
-    <div class="login d-flex align-items.center">
+    <div class="login d-flex align-items-center">
         <div class="left">
             <router-link to="/admin" v-if="user && admins.indexOf(user.email) > -1">
                 <i class="fa fa-cog"></i> Admin

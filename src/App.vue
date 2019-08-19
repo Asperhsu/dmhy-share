@@ -35,7 +35,7 @@
         },
 
         mounted () {
-            this.toggleDrawer();
+            this.toggleDrawer(true);
         },
 
         created () {
@@ -47,8 +47,9 @@
         },
 
         methods: {
-            toggleDrawer() {
-                this.$refs.drawer.toggle();
+            toggleDrawer(state = undefined) {
+                console.log(state);
+                this.$refs.drawer.toggle(state);
             },
             handleSlideEnd (visible) {
                 this.drawerVisible = visible;
