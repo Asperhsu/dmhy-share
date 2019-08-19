@@ -8,7 +8,7 @@
 
 <script>
     import DmhyFrame from '@/components/DmhyFrame';
-    let dmhyUrl = "http://share.dmhy.org/topics/list?keyword=";
+    let dmhyUrl = "https://share.dmhy.org/topics/list?keyword=";
 
     export default {
         components: { DmhyFrame },
@@ -19,12 +19,6 @@
                 if (!this.keyword) { return null; }
                 return dmhyUrl + this.keyword;
             },
-        },
-
-        mounted () {
-            if (location.protocol == 'https:') {
-                location.href = location.href.replace('https:', 'http:');
-            }
         },
     }
 </script>
