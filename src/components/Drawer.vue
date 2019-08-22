@@ -37,19 +37,27 @@
                         <div class="list-group-item pl-4 collapse" :class="{show: activeWeekNo == weekNo}"
                             :key="'body' + weekNo" v-if="programsByWeek[weekNo].length"
                             style="background-color: #464646;">
-                            <a href="#" class="text-truncate d-block p-1" :title="program.name"
-                                v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index"
-                                @click.prevent="changeProgram(program)" >
-                                {{ program.name }}
-                            </a>
+                            <div class="program-item"
+                                v-show="showHiddenProgram || !isProgramHidden(program)"
+                                v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index">
+                                <a href="#" class="text-truncate d-block p-1" :title="program.name"
+                                    @click.prevent="changeProgram(program)" >
+                                    {{ program.name }}
+                                </a>
+                                <span v-if="!isProgramHidden(program)" class="text-warning" @click="toggleProgramHidden(program)"><i class="fa fa-minus-circle"></i></span>
+                                <span v-else class="text-success" @click="toggleProgramHidden(program)"><i class="fa fa-plus-circle"></i></span>
+                            </div>
                         </div>
                     </template>
                 </ul>
 
-
                 <div class="form-check my-2 mx-3">
-                    <input class="form-check-input" type="checkbox" v-model="autoClose" :value="true">
-                    <label class="form-check-label" for="defaultCheck1">自動關閉</label>
+                    <input class="form-check-input" id="autoCloseCheck" type="checkbox" v-model="autoClose" :value="true">
+                    <label class="form-check-label" for="autoCloseCheck">自動關閉</label>
+                </div>
+                <div class="form-check my-2 mx-3">
+                    <input class="form-check-input" id="showHiddenProgramCheck" type="checkbox" v-model="showHiddenProgram" :value="true">
+                    <label class="form-check-label" for="showHiddenProgramCheck">顯示隱藏番組</label>
                 </div>
 
                 <div class="mx-3 mt-3">
@@ -112,8 +120,16 @@
                 return seasons;
             },
             autoClose: {
-                get () { return this.$localStorage.get('drawer-auto-close', true); },
-                set (value) { this.$localStorage.set('drawer-auto-close', !!value); },
+                get () { return this.$storageStore.state.drawerAutoClose; },
+                set (value) { this.$storageStore.state.drawerAutoClose = !!value; },
+            },
+            showHiddenProgram: {
+                get () { return this.$storageStore.state.showHiddenProgram; },
+                set (value) { this.$storageStore.state.showHiddenProgram = !!value; },
+            },
+            userRemoveProgramIds: {
+                get () { return this.$storageStore.state.userRemoveProgramIds; },
+                set (value) { this.$storageStore.state.userRemoveProgramIds = value; },
             },
         },
 
@@ -132,6 +148,12 @@
             sources: db.collection('sources'),
         },
 
+        mounted () {
+            this.$storageStore.init('drawerAutoClose', true);
+            this.$storageStore.init('showHiddenProgram', false);
+            this.$storageStore.init('userRemoveProgramIds', []);
+        },
+
         methods: {
             changeWeekNo(weekNo) {
                 this.activeWeekNo = (this.activeWeekNo == weekNo) ? null : weekNo;
@@ -141,6 +163,17 @@
                     this.$router.replace({name: 'program', query: {keyword: program.keyword }});
                     this.autoClose && this.$eventHub.$emit('toggle-drawer', false);
                 }
+            },
+            toggleProgramHidden (program) {
+                let ids = this.userRemoveProgramIds.concat();
+
+                let index = this.userRemoveProgramIds.indexOf(program.id);
+                (index > -1) ? ids.splice(index, 1) : ids.push(program.id);
+
+                this.userRemoveProgramIds = ids;
+            },
+            isProgramHidden (program) {
+                return this.userRemoveProgramIds.find(id => id === program.id) !== undefined;
             },
         },
     }
@@ -181,5 +214,11 @@
     .list-group-item {
         background-color: transparent;
         border-color: rgba(255, 255, 255, 0.125);
+    }
+
+    .list-group-item .program-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 </style>

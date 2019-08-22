@@ -48,7 +48,6 @@
 
         methods: {
             toggleDrawer(state = undefined) {
-                console.log(state);
                 this.$refs.drawer.toggle(state);
             },
             handleSlideEnd (visible) {
