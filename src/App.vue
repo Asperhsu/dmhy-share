@@ -6,7 +6,7 @@
         @slide-end="handleSlideEnd"
         @mask-click="toggleDrawer">
         <div class="drawer-content" slot="drawer">
-            <Drawer :visible="drawerVisible"></Drawer>
+            <Drawer></Drawer>
         </div>
         <div slot="content">
             <router-view></router-view>
@@ -28,30 +28,24 @@
             Drawer,
         },
 
-        data () {
-            return {
-                drawerVisible: false,
-            };
+        computed: {
+            drawerOpen () { return this.$store.state.drawerOpen; },
+        },
+
+        watch: {
+            drawerOpen (state) { this.$refs.drawer && this.$refs.drawer.toggle(state); },
         },
 
         mounted () {
-            this.toggleDrawer(true);
-        },
-
-        created () {
-            this.$eventHub.$on('toggle-drawer', this.toggleDrawer);
-        },
-
-        beforeDestroy () {
-            this.$eventHub.$off('toggle-drawer');
+            this.$store.commit('toggleDrawer', true);
         },
 
         methods: {
-            toggleDrawer(state = undefined) {
-                this.$refs.drawer.toggle(state);
+            toggleDrawer () {
+                this.$store.commit('toggleDrawer', !this.drawerOpen);
             },
             handleSlideEnd (visible) {
-                this.drawerVisible = visible;
+                this.$store.commit('toggleDrawer', visible);
             },
         },
     }

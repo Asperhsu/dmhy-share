@@ -122,7 +122,7 @@
 
 <script>
     import {db} from '@/db.js';
-    import weeknames from '@/weeknames.js';
+    import {weekNames} from '@/weeknames.js';
     import Modal from '@/components/Modal';
     let defaultFormData = {
         week_no: (new Date).getDay(),
@@ -137,7 +137,7 @@
         data () {
             return {
                 show: true,
-                weekNames: weeknames,
+                weekNames: weekNames,
                 activeWeekNo: (new Date).getDay(),
                 activeSession: null,
 

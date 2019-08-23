@@ -1,7 +1,7 @@
 <template>
     <div class="drawer">
-        <div class="open-btn" @click="$eventHub.$emit('toggle-drawer')">
-            <i class="fas fa-angle-double-left fa-2x" v-if="visible"></i>
+        <div class="open-btn" @click="toggleDrawer">
+            <i class="fas fa-angle-double-left fa-2x" v-if="drawerOpen"></i>
             <i class="fas fa-angle-double-right fa-2x" v-else></i>
         </div>
 
@@ -30,15 +30,12 @@
                     <template v-for="(weekName, weekNo) in weekNames">
                         <li class="list-group-item d-flex justify-content-between align-items-center"
                             :class="{'bg-primary': activeWeekNo == weekNo}" style="cursor: pointer;"
-                            :key="'head' + weekNo" @click="changeWeekNo(weekNo)">
+                            :key="'head' + weekNo" @click="activeWeekNo = weekNo">
                             {{ weekName }}
                             <span class="badge badge-secondary badge-pill" v-text="programsByWeek[weekNo].length"></span>
                         </li>
                         <program-container
-                            v-if="programsByWeek[weekNo].length"
                             :key="'body' + weekNo"
-                            :class="{show: activeWeekNo == weekNo}"
-                            :show-hidden="showHiddenProgram"
                             :week-no="weekNo"
                             :programs="programsByWeek[weekNo]"
                         ></program-container>
@@ -69,47 +66,29 @@
 
 <script>
     import {db} from '@/db.js';
-    import weeknames from '@/weeknames.js';
+    import {weekNames, programsByWeek} from '@/weeknames.js';
     import AuthBar from '@/components/AuthBar';
     import ProgramContainer from '@/components/programs/ProgramContainer';
 
     export default {
         components: {AuthBar, ProgramContainer},
 
-        props: ['visible'],
-
         data () {
             return {
-                changeSeason: false,
-                activeSession: null,
-
                 sources: {},
                 programs: [],
 
-                weekNames: weeknames,
-                activeWeekNo: (new Date).getDay(),
-
-                autoClose: true,
-                showHiddenProgram: false,
+                weekNames: weekNames,
+                changeSeason: false,
             };
         },
 
         computed: {
-            programsByWeek () {
-                let programs = {};
-                this.weekNames.map((name, no) => {
-                    programs[no] = [];
-                });
-
-                this.programs.map(program => {
-                    programs[program.week_no].push(program);
-                });
-                return programs;
-            },
             activeSource () {
                 let sources = this.sources.filter(source => source.active);
                 return sources.length ? sources[0] : {};
             },
+            programsByWeek () { return programsByWeek(this.programs); },
             seasons () {
                 let seasons = {};
                 this.sources.map(source => {
@@ -117,22 +96,38 @@
                 });
                 return seasons;
             },
+            drawerOpen () { return this.$store.state.autoClose; },
+            autoClose: {
+                get() { return this.$store.state.autoClose; },
+                set(value) { this.$store.commit('autoClose', value); },
+            },
+            showHiddenProgram: {
+                get() { return this.$store.state.showHiddenProgram; },
+                set(value) { this.$store.commit('showHiddenProgram', value); },
+            },
+            activeSession: {
+                get() { return this.$store.state.activeSession; },
+                set(value) { this.$store.commit('activeSession', value); },
+            },
+            activeWeekNo: {
+                get() { return this.$store.state.activeWeekNo; },
+                set(value) { this.$store.commit('activeWeekNo', value); },
+            },
         },
 
         watch: {
             sources () {
                 if (!this.activeSource.season_slug) return;
-                this.activeSession = this.activeSource.season_slug;
+                this.$store.commit('activeSession', this.activeSource.season_slug);
             },
-            activeSession (value) {
-                let programsRef = db.collection('programs').where("season_slugs", "array-contains", value);
-                this.$bind('programs', programsRef);
+            activeSession: {
+                immediate: true,
+                handler (value) {
+                    if (!value) return;
+                    let programsRef = db.collection('programs').where("season_slugs", "array-contains", value);
+                    this.$bind('programs', programsRef);
+                },
             },
-        },
-
-        storage: {
-            keys: ['autoClose', 'showHiddenProgram'],
-            namespace: 'drawer',
         },
 
         firestore: {
@@ -140,9 +135,7 @@
         },
 
         methods: {
-            changeWeekNo(weekNo) {
-                this.activeWeekNo = (this.activeWeekNo == weekNo) ? null : weekNo;
-            },
+            toggleDrawer () { this.$store.commit('toggleDrawer'); }
         },
     }
 </script>

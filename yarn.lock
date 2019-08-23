@@ -3460,6 +3460,11 @@ firebase@^6.3.4:
     "@firebase/storage" "0.3.8"
     "@firebase/util" "0.2.24"
 
+flatted@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
+  integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
+
 flush-write-stream@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/flush-write-stream/-/flush-write-stream-1.1.1.tgz#8dd7d873a1babc207d94ead0c2e0e44276ebf2e8"
@@ -4669,6 +4674,11 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
+
+lodash.merge@^4.6.1:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
+  integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
 lodash.transform@^4.6.0:
   version "4.6.0"
@@ -7639,10 +7649,18 @@ vuefire@^2.1.1:
   dependencies:
     "@posva/vuefire-core" "^2.1.1"
 
-vuejs-storage@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/vuejs-storage/-/vuejs-storage-3.0.1.tgz#0b1a0b3e9465bac324bf64d1f84523a9d6a9e579"
-  integrity sha512-AIN3j0vtylIoYUz5trXzmFIUbXDMTxcEDWggWtl8Uy6IfiFV7dcwxxwG3UUAtu2z2IEHrEKR5mjBHFCXptN51w==
+vuex-persist@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/vuex-persist/-/vuex-persist-2.0.1.tgz#411ef2becc04db3f222779f7c5d2e6615cbdd4ca"
+  integrity sha512-V3WSBYmxcAP6ei0VVt2lxGloeWJZgk1Ao4r+iOxLMhAv+UYIK91qbjwvqk6Xr3tAi052jzSwn8aoamtuz8ArsQ==
+  dependencies:
+    flatted "^2.0.0"
+    lodash.merge "^4.6.1"
+
+vuex@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.1.tgz#0c264bfe30cdbccf96ab9db3177d211828a5910e"
+  integrity sha512-ER5moSbLZuNSMBFnEBVGhQ1uCBNJslH9W/Dw2W7GZN23UQA69uapP5GTT9Vm8Trc0PzBSVt6LzF3hGjmv41xcg==
 
 watchpack@^1.5.0:
   version "1.6.0"
