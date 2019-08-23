@@ -46,6 +46,8 @@
                     name: this.name,
                     keyword: this.name,
                 });
+
+                this.name = null;
             },
             remove(program) {
                 this.$store.commit('toggleUserProgram', program);

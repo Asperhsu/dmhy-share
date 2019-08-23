@@ -49,7 +49,7 @@
     }
 </script>
 
-<style scoped>
+<style>
     .program-container {
         background-color: #464646;
         padding-left: 1.5rem!important;
