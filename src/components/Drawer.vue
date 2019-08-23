@@ -37,15 +37,15 @@
                         <div class="list-group-item pl-4 collapse" :class="{show: activeWeekNo == weekNo}"
                             :key="'body' + weekNo" v-if="programsByWeek[weekNo].length"
                             style="background-color: #464646;">
-                            <div class="program-item"
+                            <div class="program-item" :class="{hidden: isProgramHidden(program)}"
                                 v-show="showHiddenProgram || !isProgramHidden(program)"
                                 v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index">
                                 <a href="#" class="text-truncate d-block p-1" :title="program.name"
                                     @click.prevent="changeProgram(program)" >
                                     {{ program.name }}
                                 </a>
-                                <span v-if="!isProgramHidden(program)" class="text-warning" @click="toggleProgramHidden(program)"><i class="fa fa-minus-circle"></i></span>
-                                <span v-else class="text-success" @click="toggleProgramHidden(program)"><i class="fa fa-plus-circle"></i></span>
+                                <span v-if="!isProgramHidden(program)" class="toggle-btn text-warning" @click="toggleProgramHidden(program)"><i class="fa fa-minus-circle"></i></span>
+                                <span v-else class="toggle-btn text-success" @click="toggleProgramHidden(program)"><i class="fa fa-plus-circle"></i></span>
                             </div>
                         </div>
                     </template>
@@ -93,6 +93,10 @@
 
                 weekNames: weeknames,
                 activeWeekNo: (new Date).getDay(),
+
+                autoClose: true,
+                showHiddenProgram: false,
+                userRemoveProgramIds: [],
             };
         },
 
@@ -119,18 +123,6 @@
                 });
                 return seasons;
             },
-            autoClose: {
-                get () { return this.$storageStore.state.drawerAutoClose; },
-                set (value) { this.$storageStore.state.drawerAutoClose = !!value; },
-            },
-            showHiddenProgram: {
-                get () { return this.$storageStore.state.showHiddenProgram; },
-                set (value) { this.$storageStore.state.showHiddenProgram = !!value; },
-            },
-            userRemoveProgramIds: {
-                get () { return this.$storageStore.state.userRemoveProgramIds; },
-                set (value) { this.$storageStore.state.userRemoveProgramIds = value; },
-            },
         },
 
         watch: {
@@ -144,14 +136,13 @@
             },
         },
 
-        firestore: {
-            sources: db.collection('sources'),
+        storage: {
+            keys: ['autoClose', 'showHiddenProgram', 'userRemoveProgramIds'],
+            namespace: 'drawer',
         },
 
-        mounted () {
-            this.$storageStore.init('drawerAutoClose', true);
-            this.$storageStore.init('showHiddenProgram', false);
-            this.$storageStore.init('userRemoveProgramIds', []);
+        firestore: {
+            sources: db.collection('sources'),
         },
 
         methods: {
@@ -180,8 +171,8 @@
 </script>
 
 <style scoped>
-    a { color: #5da6f5; }
-    a:hover { color: #53bac7; }
+    a { color: #ccc; }
+    a:hover { color: #5da6f5; }
 
     .drawer {
         position: absolute;
@@ -220,5 +211,16 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+    .list-group-item .program-item.hidden {
+        text-decoration: line-through;
+        opacity: .7;
+    }
+
+    .list-group-item .program-item .toggle-btn {
+        display: none;
+    }
+    .list-group-item .program-item:hover .toggle-btn {
+        display: inline;
     }
 </style>

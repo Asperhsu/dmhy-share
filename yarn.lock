@@ -7627,11 +7627,6 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue-web-storage@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/vue-web-storage/-/vue-web-storage-4.0.0.tgz#d7e6ea612efde129901ba2baaef128d04d80e5ff"
-  integrity sha512-SMeOuX6pa6gTx2p889Cj62XgAL0m+Sq0umA64VwtM8Sdgc+kAwY6JzSxPdOk5KLqxuflOSEr4174sZqzZ6otCw==
-
 vue@^2.6.10, vue@^2.6.8:
   version "2.6.10"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
@@ -7643,6 +7638,11 @@ vuefire@^2.1.1:
   integrity sha512-rle2WuSrvDRsMAgzSa0vr/OboFWHWfmrELn1Beqp9dN7NxcIH0q1hd/GjlbIh03axDhmwAkuTrJ6UTbM85kAwg==
   dependencies:
     "@posva/vuefire-core" "^2.1.1"
+
+vuejs-storage@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vuejs-storage/-/vuejs-storage-3.0.1.tgz#0b1a0b3e9465bac324bf64d1f84523a9d6a9e579"
+  integrity sha512-AIN3j0vtylIoYUz5trXzmFIUbXDMTxcEDWggWtl8Uy6IfiFV7dcwxxwG3UUAtu2z2IEHrEKR5mjBHFCXptN51w==
 
 watchpack@^1.5.0:
   version "1.6.0"
