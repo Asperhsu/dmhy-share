@@ -34,43 +34,14 @@
                             {{ weekName }}
                             <span class="badge badge-secondary badge-pill" v-text="programsByWeek[weekNo].length"></span>
                         </li>
-                        <div class="program-container list-group-item collapse" :class="{show: activeWeekNo == weekNo}"
-                            :key="'body' + weekNo" v-if="programsByWeek[weekNo].length">
-
-                            <div class="program-item" :class="{hidden: isProgramHidden(program)}"
-                                v-show="showHiddenProgram || !isProgramHidden(program)"
-                                v-for="(program, index) in programsByWeek[weekNo]" :key="weekNo + index">
-
-                                <a href="#" class="text-truncate d-block p-1" :title="program.name"
-                                    @click.prevent="changeProgram(program)" >
-                                    {{ program.name }}
-                                </a>
-
-                                <span v-if="!isProgramHidden(program)" class="toggle-btn text-warning" @click="toggleProgramHidden(program)">
-                                    <i class="fa fa-minus-circle"></i>
-                                </span>
-                                <span v-else class="toggle-btn text-success" @click="toggleProgramHidden(program)">
-                                    <i class="fa fa-plus-circle"></i>
-                                </span>
-                            </div>
-
-                            <div class="program-item"
-                                v-for="(program, index) in userProgramsByWeek[weekNo]" :key="'u' + weekNo + index">
-                                <a href="#" class="text-truncate d-block p-1" :title="program.name"
-                                    @click.prevent="changeProgram(program)" >
-                                    <i class="fa fa-child"></i> {{ program.name }}
-                                </a>
-                                <span class="toggle-btn text-danger" @click="removeUserProgram(program)">
-                                    <i class="fa fa-times-circle"></i>
-                                </span>
-                            </div>
-
-                            <div class="program-item p-2">
-                                <i class="fa fa-plus"></i>
-                                <input type="text" class="ml-2 form-control form-control-sm" v-model="userProgramName" placeholder="自定義番組">
-                                <button class="ml-2 btn btn-sm btn-success" @click="saveUserProgram(weekNo)"><i class="fa fa-save"></i></button>
-                            </div>
-                        </div>
+                        <program-container
+                            v-if="programsByWeek[weekNo].length"
+                            :key="'body' + weekNo"
+                            :class="{show: activeWeekNo == weekNo}"
+                            :show-hidden="showHiddenProgram"
+                            :week-no="weekNo"
+                            :programs="programsByWeek[weekNo]"
+                        ></program-container>
                     </template>
                 </ul>
 
@@ -100,9 +71,10 @@
     import {db} from '@/db.js';
     import weeknames from '@/weeknames.js';
     import AuthBar from '@/components/AuthBar';
+    import ProgramContainer from '@/components/programs/ProgramContainer';
 
     export default {
-        components: {AuthBar},
+        components: {AuthBar, ProgramContainer},
 
         props: ['visible'],
 
@@ -119,9 +91,6 @@
 
                 autoClose: true,
                 showHiddenProgram: false,
-                userRemoveProgramIds: [],
-                userProgramName: null,
-                userPrograms: [],
             };
         },
 
@@ -133,17 +102,6 @@
                 });
 
                 this.programs.map(program => {
-                    programs[program.week_no].push(program);
-                });
-                return programs;
-            },
-            userProgramsByWeek () {
-                let programs = {};
-                this.weekNames.map((name, no) => {
-                    programs[no] = [];
-                });
-
-                this.userPrograms.map(program => {
                     programs[program.week_no].push(program);
                 });
                 return programs;
@@ -173,7 +131,7 @@
         },
 
         storage: {
-            keys: ['autoClose', 'showHiddenProgram', 'userRemoveProgramIds', 'userPrograms'],
+            keys: ['autoClose', 'showHiddenProgram'],
             namespace: 'drawer',
         },
 
@@ -185,47 +143,11 @@
             changeWeekNo(weekNo) {
                 this.activeWeekNo = (this.activeWeekNo == weekNo) ? null : weekNo;
             },
-            changeProgram (program) {
-                if (this.$route.name !== 'program' || this.$route.query.keyword !== program.keyword) {
-                    this.$router.push({name: 'program', query: {keyword: program.keyword }});
-                    this.autoClose && this.$eventHub.$emit('toggle-drawer', false);
-                }
-            },
-            toggleProgramHidden (program) {
-                let ids = this.userRemoveProgramIds.concat();
-
-                let index = this.userRemoveProgramIds.indexOf(program.id);
-                (index > -1) ? ids.splice(index, 1) : ids.push(program.id);
-
-                this.userRemoveProgramIds = ids;
-            },
-            isProgramHidden (program) {
-                return this.userRemoveProgramIds.find(id => id === program.id) !== undefined;
-            },
-            saveUserProgram (weekNo) {
-                if (!this.userProgramName) return false;
-                this.userPrograms.push({
-                    week_no: weekNo,
-                    name: this.userProgramName,
-                    keyword: this.userProgramName,
-                });
-            },
-            removeUserProgram(program) {
-                let index = this.userPrograms.findIndex(prog => {
-                    return prog.weekNo === program.weekNo && prog.name === program.name;
-                });
-
-                if (index <= -1) return;
-
-                let programs = this.userPrograms.concat();
-                programs.splice(index, 1);
-                this.userPrograms = programs;
-            },
         },
     }
 </script>
 
-<style scoped>
+<style>
     a { color: #ccc; }
     a:hover { color: #5da6f5; }
 
@@ -257,30 +179,8 @@
         color: #ddd;
     }
 
-    .list-group-item {
+    .drawer .list-group-item {
         background-color: transparent;
         border-color: rgba(255, 255, 255, 0.125);
-    }
-
-    .program-container {
-        background-color: #464646;
-        padding-left: 1.5rem!important;
-    }
-
-    .program-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .program-item.hidden {
-        text-decoration: line-through;
-        opacity: .7;
-    }
-
-    .program-item .toggle-btn {
-        display: none;
-    }
-    .program-item:hover .toggle-btn {
-        display: inline;
     }
 </style>
