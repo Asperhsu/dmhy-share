@@ -34,18 +34,41 @@
                             {{ weekName }}
                             <span class="badge badge-secondary badge-pill" v-text="programsByWeek[weekNo].length"></span>
                         </li>
-                        <div class="list-group-item pl-4 collapse" :class="{show: activeWeekNo == weekNo}"
-                            :key="'body' + weekNo" v-if="programsByWeek[weekNo].length"
-                            style="background-color: #464646;">
+                        <div class="program-container list-group-item collapse" :class="{show: activeWeekNo == weekNo}"
+                            :key="'body' + weekNo" v-if="programsByWeek[weekNo].length">
+
                             <div class="program-item" :class="{hidden: isProgramHidden(program)}"
                                 v-show="showHiddenProgram || !isProgramHidden(program)"
-                                v-for="(program, index) in (programsByWeek[weekNo] || [])" :key="weekNo + index">
+                                v-for="(program, index) in programsByWeek[weekNo]" :key="weekNo + index">
+
                                 <a href="#" class="text-truncate d-block p-1" :title="program.name"
                                     @click.prevent="changeProgram(program)" >
                                     {{ program.name }}
                                 </a>
-                                <span v-if="!isProgramHidden(program)" class="toggle-btn text-warning" @click="toggleProgramHidden(program)"><i class="fa fa-minus-circle"></i></span>
-                                <span v-else class="toggle-btn text-success" @click="toggleProgramHidden(program)"><i class="fa fa-plus-circle"></i></span>
+
+                                <span v-if="!isProgramHidden(program)" class="toggle-btn text-warning" @click="toggleProgramHidden(program)">
+                                    <i class="fa fa-minus-circle"></i>
+                                </span>
+                                <span v-else class="toggle-btn text-success" @click="toggleProgramHidden(program)">
+                                    <i class="fa fa-plus-circle"></i>
+                                </span>
+                            </div>
+
+                            <div class="program-item"
+                                v-for="(program, index) in userProgramsByWeek[weekNo]" :key="'u' + weekNo + index">
+                                <a href="#" class="text-truncate d-block p-1" :title="program.name"
+                                    @click.prevent="changeProgram(program)" >
+                                    <i class="fa fa-child"></i> {{ program.name }}
+                                </a>
+                                <span class="toggle-btn text-danger" @click="removeUserProgram(program)">
+                                    <i class="fa fa-times-circle"></i>
+                                </span>
+                            </div>
+
+                            <div class="program-item p-2">
+                                <i class="fa fa-plus"></i>
+                                <input type="text" class="ml-2 form-control form-control-sm" v-model="userProgramName" placeholder="自定義番組">
+                                <button class="ml-2 btn btn-sm btn-success" @click="saveUserProgram(weekNo)"><i class="fa fa-save"></i></button>
                             </div>
                         </div>
                     </template>
@@ -97,6 +120,8 @@
                 autoClose: true,
                 showHiddenProgram: false,
                 userRemoveProgramIds: [],
+                userProgramName: null,
+                userPrograms: [],
             };
         },
 
@@ -108,6 +133,17 @@
                 });
 
                 this.programs.map(program => {
+                    programs[program.week_no].push(program);
+                });
+                return programs;
+            },
+            userProgramsByWeek () {
+                let programs = {};
+                this.weekNames.map((name, no) => {
+                    programs[no] = [];
+                });
+
+                this.userPrograms.map(program => {
                     programs[program.week_no].push(program);
                 });
                 return programs;
@@ -137,7 +173,7 @@
         },
 
         storage: {
-            keys: ['autoClose', 'showHiddenProgram', 'userRemoveProgramIds'],
+            keys: ['autoClose', 'showHiddenProgram', 'userRemoveProgramIds', 'userPrograms'],
             namespace: 'drawer',
         },
 
@@ -151,7 +187,7 @@
             },
             changeProgram (program) {
                 if (this.$route.name !== 'program' || this.$route.query.keyword !== program.keyword) {
-                    this.$router.replace({name: 'program', query: {keyword: program.keyword }});
+                    this.$router.push({name: 'program', query: {keyword: program.keyword }});
                     this.autoClose && this.$eventHub.$emit('toggle-drawer', false);
                 }
             },
@@ -165,6 +201,25 @@
             },
             isProgramHidden (program) {
                 return this.userRemoveProgramIds.find(id => id === program.id) !== undefined;
+            },
+            saveUserProgram (weekNo) {
+                if (!this.userProgramName) return false;
+                this.userPrograms.push({
+                    week_no: weekNo,
+                    name: this.userProgramName,
+                    keyword: this.userProgramName,
+                });
+            },
+            removeUserProgram(program) {
+                let index = this.userPrograms.findIndex(prog => {
+                    return prog.weekNo === program.weekNo && prog.name === program.name;
+                });
+
+                if (index <= -1) return;
+
+                let programs = this.userPrograms.concat();
+                programs.splice(index, 1);
+                this.userPrograms = programs;
             },
         },
     }
@@ -207,20 +262,25 @@
         border-color: rgba(255, 255, 255, 0.125);
     }
 
-    .list-group-item .program-item {
+    .program-container {
+        background-color: #464646;
+        padding-left: 1.5rem!important;
+    }
+
+    .program-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .list-group-item .program-item.hidden {
+    .program-item.hidden {
         text-decoration: line-through;
         opacity: .7;
     }
 
-    .list-group-item .program-item .toggle-btn {
+    .program-item .toggle-btn {
         display: none;
     }
-    .list-group-item .program-item:hover .toggle-btn {
+    .program-item:hover .toggle-btn {
         display: inline;
     }
 </style>
