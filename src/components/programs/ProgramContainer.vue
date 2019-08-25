@@ -36,13 +36,14 @@
 
         computed: {
             activeWeekNo () { return this.$store.state.activeWeekNo; },
+            autoClose () { return this.$store.state.autoClose; },
         },
 
         methods: {
             gotoProgram (program) {
                 if (this.$route.name !== 'program' || this.$route.query.keyword !== program.keyword) {
                     this.$router.push({name: 'program', query: {keyword: program.keyword }});
-                    this.autoClose && this.$eventHub.$emit('toggle-drawer', false);
+                    this.autoClose && this.$store.commit('toggleDrawer', false);
                 }
             },
         },
